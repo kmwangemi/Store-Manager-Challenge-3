@@ -42,10 +42,9 @@ class DbSetup():
         CREATE TABLE IF NOT EXISTS sales(
             id serial PRIMARY KEY,
             product_name varchar NOT NULL,
-            quantity numeric NOT NULL,
-            stock_quantity numeric NOT NULL,
-            price numeric NOT NULL,
-            total numeric NOT NULL,
+            quantity integer NOT NULL,
+            price integer NOT NULL,
+            total integer NOT NULL,
             created_by varchar,
             created_at timestamp with time zone DEFAULT ('now'::text)::date NOT NULL
         )
