@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/kmwangemi/Store-Manager-Challenge-3.svg?branch=develop)](https://travis-ci.org/kmwangemi/Store-Manager-Challenge-3) [![Coverage Status](https://coveralls.io/repos/github/kmwangemi/Store-Manager-Challenge-3/badge.svg?branch=develop)](https://coveralls.io/github/kmwangemi/Store-Manager-Challenge-3?branch=develop) [![Maintainability](https://api.codeclimate.com/v1/badges/23d069b21554c8e82c3f/maintainability)](https://codeclimate.com/github/kmwangemi/Store-Manager-Challenge-3/maintainability)
 
 # Store-Manager-Challenge-3
 An Application that helps store owners manage sales and product inventory records.

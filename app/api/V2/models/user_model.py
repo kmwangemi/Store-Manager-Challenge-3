@@ -1,3 +1,7 @@
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from db_con import db_url
+
 '''Sale model'''
 
 users = []
@@ -5,30 +9,41 @@ users = []
 class User(object):
     """user model to store all users data"""
 
-    def __init__(self, fname, lname, username, password, role):
+    def __init__(self, fname="kelvin", lname="mwangemi", email="mwangemik@gmail.com", password="123", role="admin"):
         self.fname = fname
         self.lname = lname
-        self.username = username
+        self.email = email
         self.password = password
         self.role = role
         
     def add_users(self):
-        """Adds a new user to the users list"""
-        new_user = {}
-        new_user['userId'] = str(len(users)+1)
-        new_user['fname'] = self.fname
-        new_user['lname'] = self.lname
-        new_user['username'] = self.username
-        new_user['password'] = self.password
-        new_user['role'] = self.role
-        users.append(new_user)
-        return new_user
+        """Adds a new user to the users database"""
+        query = """
+                INSERT INTO users(fname, lname, email, password, role)
+                VALUES(%s, %s, %s, %s, %s) 
+                """
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute(query,(
+            self.fname,
+            self.lname,
+            self.email,
+            self.password,
+            self.role
+        ))
+        conn.commit()
         
     def get_all_users(self):
-        return users
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM users")
+        rows = cur.fetchall()
+        return rows
 
     def get_one_user(self, userId):
-        one_user = [one_user for one_user in users if one_user['userId'] == userId] #list comprehension
-        if len(one_user) == 0:
-            return {"message": "User not found"}
-        return one_user[0]
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        query = "SELECT * FROM users WHERE id ='{0}'".format(userId)
+        cur.execute(query)
+        row = cur.fetchall()
+        return row
