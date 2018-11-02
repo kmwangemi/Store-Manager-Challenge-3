@@ -24,8 +24,8 @@ def signup():
 def login():
     """users will login to the app via this route"""
     response = user2.login()
-    return response    
-   
+    return response
+    
 @user.route('/users', methods=['GET'])
 def get_all_users():
     """Gets all users"""

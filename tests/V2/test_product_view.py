@@ -1,6 +1,6 @@
 import unittest
 import json
-#from run import app
+from run import app
 from app.api.V2.views.product_view import Product
 
 class ProductstestCase(unittest.TestCase):

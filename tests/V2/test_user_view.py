@@ -30,16 +30,12 @@ class UserstestCase(unittest.TestCase):
             '/api/v2/auth/login',
             data=json.dumps(self.user),
             content_type='application/json'
-        )
-        self.data = json.loads(self.login.data.decode("utf-8"))
-        # get the token to be used by tests
-        self.token = self.data['auth_token']                    
-
+        )                  
 
     '''Tests for user creation'''
     def test_user_created_successfully(self):
         """Tests that a user is created successfully"""
-        res = self.client().post('/api/v2/users', data=json.dumps(self.user), headers = {"content-type": "application/json", "access-token": self.token})
+        res = self.client().post('/api/v2/users', data=json.dumps(self.user), headers = {"content-type": "application/json"})
         self.assertEqual(res.status_code, 201)
     
     def test_user_cannot_be_created_with_invalid_details(self):
@@ -61,45 +57,17 @@ class UserstestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn("User", str(res.data))
 
-
-'''
-    def test_user_needs_token_to_logout(self):
-        """test that you must be logged for you to logout"""
-        res = self.client().post('/api/v2/logout', data={},
-                                 headers={"content_type": "application/json"})
-        self.assertEqual(res.status_code, 401)
-
-    def test_invalid_token(self):
-        """Test cannot accept invalid token"""
-        logout = self.client().post('/api/v2/logout', data={},
-                                    headers={"content_type": "application/json",
-                                             "access-token": "wyuweyguy1256"})
-        self.assertEqual(logout.status_code, 401)
-
-    def test_is_logged_out(self):
-        """Test user is logged out"""
-        self.client().post('/api/v2/logout', data={},
-                           headers={"content_type": "application/json",
-                                    "access-token": self.token
-                                    })
-        logout = self.client().post('/api/v2/logout', data={},
-                                    headers={"content_type": "application/json",
-                                             "access-token": self.token
-                                             })
-        self.assertEqual(logout.status_code, 401)
-
-
     def test_user_can_login(self):
         """Test user can login to get access token"""
         # Create_user
         self.client().post(
-            '/api/v2/auth/register',
+            '/api/v2/auth/signup',
             data=json.dumps(self.user),
             headers={"content-type": "application/json"}
         )
         login = self.client().post(
             '/api/v2/auth/login',
-            data=json.dumps(self.logins),
+            data=json.dumps(self.login),
             headers={"content-type": "application/json"}
         )
         self.assertEqual(login.status_code, 200)
@@ -117,7 +85,6 @@ class UserstestCase(unittest.TestCase):
             headers={"content-type": "application/json"}
         )
         self.assertEqual(login.status_code, 404)
-        self.assertIn("User does not exist", str(login.data))
 
     def test_login_details_required(self):
         """Test that all login fields are required"""
@@ -130,17 +97,13 @@ class UserstestCase(unittest.TestCase):
             headers={"content-type": "application/json"}
         )
         self.assertEqual(login.status_code, 401)
-        self.assertIn("login required!", str(login.data))
-
-
-
 
     def test_cannot_create_duplicate_user(self):
         """
         Tests that duplicate usernames cannot be created
         """
         self.client().post(
-            '/api/v2/auth/register',
+            '/api/v2/auth/signup',
             data=json.dumps(self.user),
             headers={"content-type": 'application/json'}
         )
@@ -154,7 +117,7 @@ class UserstestCase(unittest.TestCase):
     def test_details_missing(self):
         """test username and password required"""
         res = self.client().post(
-            '/api/v2/auth/register',
+            '/api/v2/auth/signup',
             data=json.dumps({
                 "first_name": "patrick",
                 "last_name": "migot"
@@ -162,39 +125,18 @@ class UserstestCase(unittest.TestCase):
             headers={"content-type": 'application/json'}
         )
         self.assertEqual(res.status_code, 400)
-        self.assertIn("email or password missing", str(res.data))
 
     def test_email_cannot_duplicate(self):
         """Test cannot create duplicate emmails"""
         self.client().post(
-            '/api/v2/auth/register',
+            '/api/v2/auth/signup',
             data=json.dumps(self.user),
             headers={"content-type": 'application/json'}
         )
         res2 = self.client().post(
-            '/api/v2/auth/register',
+            '/api/v2/auth/signup',
             data=json.dumps(self.user),
             headers={"content-type": 'application/json'}
         )
         self.assertEqual(res2.status_code, 409)
         self.assertIn("Email already exists", str(res2.data))
-
-    def test_password_validation(self):
-        """Test password must be 6-20 characters, alphanumeric"""
-        res = self.client().post(
-            '/api/v2/auth/register',
-            data=json.dumps({
-               
-                "email": "john@gmail.com",
-                "password": "123",
-                "first_name": "patrick",
-                "last_name": "migot"
-            }),
-            headers={"content-type": 'application/json'}
-        )
-        self.assertEqual(res.status_code, 406)
-        self.assertIn(
-            "Password must be 6-20 Characters",
-            str(res.data)
-        )        
-    '''     

@@ -39,24 +39,25 @@ class User(object):
 
     def login(self):
         """A user can login and get a token"""
-        auth = request.authorization
-        if not auth or not auth["username"] or not auth["password"]:
+        data = request.get_json()
+        email = data["email"]
+        password = data["password"]
+        if not data or not email or not password:
             return make_response(jsonify({"Message": "Please enter credentials"}))
-         
-        cur.execute("SELECT * FROM users WHERE email= '{}'".format(auth["username"]))
+     
+        cur.execute("SELECT * FROM users WHERE email= '{}'".format(data["email"]))
         if cur.fetchone():
-            cur.execute("SELECT password FROM users WHERE email= '{}'".format(auth["username"]))
+            cur.execute("SELECT password FROM users WHERE email= '{}'".format(data["email"]))
             for row in cur.fetchall():
-                if check_password_hash(row["password"], auth["password"]):
+                if check_password_hash(row["password"], data["password"]):
                     """generate token"""
-                    cur.execute("SELECT role FROM users WHERE username= '{}'".format(auth["username"]))
+                    cur.execute("SELECT role FROM users WHERE email= '{}'".format(data["email"]))
                     for row in cur.fetchall():
                         token = jwt.encode({"username": row["password"], 'exp': datetime.datetime.utcnow()
                                                                        + datetime.timedelta(minutes=100)},
                                            SECRET_KEY)
-                        return jsonify({"Token": token.decode('UTF-8')})
-        return make_response(jsonify({"Message": "Invalid credentials"}))    
-
+                        return make_response(jsonify({"Token": token.decode('UTF-8')}))
+        return make_response(jsonify({"Message": "Invalid credentials"})) 
 
     def signup(self):
         data = request.get_json()
