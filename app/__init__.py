@@ -5,6 +5,7 @@ from instance.config import app_config
 from app.api.V2.views.product_view import product
 from app.api.V2.views.sale_view import sale
 from app.api.V2.views.user_view import user
+from app.api.V2.views.user_view import auth
 from db_con import DbSetup
 
 def create_app(config_name="development"):
@@ -21,5 +22,6 @@ def create_app(config_name="development"):
     app.register_blueprint(product)
     app.register_blueprint(sale)
     app.register_blueprint(user)
+    app.register_blueprint(auth)
   
     return app

@@ -50,30 +50,35 @@ class Product(object):
         return rows
 
     def get_one_product(self, productId):
-        conn = psycopg2.connect(db_url)
-        cur = conn.cursor(cursor_factory=RealDictCursor)
         query = "SELECT * FROM products WHERE id ='{}'".format(productId)
         cur.execute(query)
         row = cur.fetchall()
         return row
 
-    def update_product(self, productId):
-        conn = psycopg2.connect(self)
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("UPDATE products SET product_name=%s, category=%s, quantity=%s, price=%s, description=%s WHERE productId = %s",
-        (
-            self.product_name,
-            self.category,
-            self.quantity,
-            self.price,
-            self.description
-            ))
+    def update_product(self, productId, **kwargs):
+        sql = """ UPDATE products SET product_name = %s, quantity = %s, price = %s WHERE id = %s"""
+        query = "SELECT * FROM products WHERE id = " + str(productId)
+        cur.execute(query)
+        rows = cur.fetchall()
+        if not rows:
+            return make_response(jsonify({"Message": "Product not found"}), 200)
+
+        
+        cur.execute(sql, (kwargs["product_name"], kwargs["quantity"],
+                              kwargs["price"], productId))
         conn.commit()
+        return make_response(jsonify({"Message": "Updated successfully"}), 200)
 
     def delete_product(self, productId):
-        conn = psycopg2.connect(self)
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("DELETE FROM products WHERE productId=%s",(
-                productId
-            ))
+        cur.execute("SELECT * FROM products WHERE id= '{}'".format(productId))
+        if not cur.fetchone():
+            return jsonify({"Message": "Item does not exist"})
+        cur.execute("DELETE FROM products WHERE  id= '{}'".format(productId))
         conn.commit()
+        return jsonify({"Message": "Item deleted successfully"})
+
+
+
+
+
+      

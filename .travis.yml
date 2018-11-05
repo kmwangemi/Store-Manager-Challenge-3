@@ -10,9 +10,8 @@ services:
   - postgresql
 
 before_script: 
-  - "psql -c 'create database Store_manager;' -U mwangemi"
-  - psql -c "create user mwangemi with password '123';" -U mwangemi
-  - python migrations.py    
+  - "psql -c 'create database store_manager;' -U mwangemi"
+  - psql -c "create user mwangemi with password '123';" -U mwangemi   
   
 # command to run tests
 script:
